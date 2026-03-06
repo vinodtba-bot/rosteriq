@@ -1,0 +1,73 @@
+# AWS SAM template for local Lambda testing (no Docker required)
+# Run: sam local start-api --template template.yaml
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: RosterIQ local Lambda API for SAM CLI
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 256
+    Runtime: nodejs20.x
+
+Parameters:
+  EventBusName:
+    Type: String
+    Default: default
+
+Resources:
+  FhirApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: rosteriq-fhir-api-local
+      CodeUri: ../../services/fhir-api/
+      Handler: dist/handler.handleFhirRequest
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
+      Environment:
+        Variables:
+          EVENT_BUS_NAME: !Ref EventBusName
+
+  AgentsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: rosteriq-agents-local
+      Runtime: python3.12
+      CodeUri: ../../services/agents/
+      Handler: handler.handler
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /agents
+            Method: POST
+      Environment:
+        Variables: {}
+
+  GraphFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: rosteriq-graph-local
+      Runtime: python3.12
+      CodeUri: ../../services/graph/
+      Handler: handler.handler
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /graph
+            Method: POST
+      Environment:
+        Variables: {}
+
+Outputs:
+  ApiUrl:
+    Description: API Gateway endpoint URL
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+  FhirApiUrl:
+    Description: FHIR API base path
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"

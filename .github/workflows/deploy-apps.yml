@@ -1,0 +1,49 @@
+# RosterIQ — Deploy Next.js apps (Vercel or Amplify)
+# For Vercel: connect repo in Vercel dashboard; optional manual trigger here.
+# For Amplify: connect repo in Amplify Console; builds on push.
+
+name: Deploy Apps
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'Deploy target'
+        required: true
+        default: 'vercel'
+        type: choice
+        options:
+          - vercel
+          - amplify
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run build
+
+      - name: Deploy to Vercel
+        if: inputs.target == 'vercel'
+        run: |
+          npm i -g vercel
+          for app in web provider-portal admin; do
+            (cd apps/$app && vercel --prod --token "${{ secrets.VERCEL_TOKEN }}")
+          done
+
+      - name: Deploy to Amplify
+        if: inputs.target == 'amplify'
+        run: |
+          echo "Configure Amplify Console to build from this repo; or use Amplify CLI."
+          echo "Apps built above; push to connected branch to trigger Amplify."

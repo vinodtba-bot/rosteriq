@@ -1,0 +1,3 @@
+# Graph + Neptune for RosterIQ
+boto3>=1.35.0
+gremlinpython>=3.7.0

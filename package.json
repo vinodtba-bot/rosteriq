@@ -1,0 +1,22 @@
+{
+  "name": "rosteriq",
+  "version": "1.0.0",
+  "private": true,
+  "description": "RosterIQ™ — Production-ready serverless monorepo on AWS",
+  "scripts": {
+    "build": "pnpm -r run build",
+    "dev": "pnpm -r --parallel run dev",
+    "test": "pnpm -r run test",
+    "lint": "pnpm -r run lint",
+    "clean": "pnpm -r run clean && rm -rf node_modules",
+    "deploy": "pnpm run deploy:infra && pnpm run deploy:apps",
+    "deploy:infra": "cd infrastructure/cdk && pnpm run cdk:deploy",
+    "deploy:apps": "infrastructure/scripts/deploy-apps.sh",
+    "sam:local": "cd infrastructure/sam && sam local start-api --parameter-overrides EventBusName=default"
+  },
+  "engines": {
+    "node": ">=18",
+    "pnpm": ">=8"
+  },
+  "packageManager": "pnpm@9.14.2"
+}

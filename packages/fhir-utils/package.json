@@ -1,0 +1,27 @@
+{
+  "name": "@rosteriq/fhir-utils",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "lint": "eslint src",
+    "test": "echo \"No tests\""
+  },
+  "devDependencies": {
+    "@rosteriq/shared-types": "workspace:*",
+    "typescript": "^5.3.3"
+  },
+  "peerDependencies": {
+    "@rosteriq/shared-types": "workspace:*"
+  }
+}
